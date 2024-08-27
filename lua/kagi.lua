@@ -1,7 +1,7 @@
 local M = {}
 
 --- Replace the currently selected text with the first code answer from Kagi
-function M.replaceSelection()
+function M.replaceSelectionOrCurrentLine()
   local req = require("request")
   local extract = require("extract")
   local buffer = vim.api.nvim_get_current_buf()
