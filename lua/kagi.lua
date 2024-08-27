@@ -16,7 +16,8 @@ function M.replaceSelection()
   if selectedText == "" then
     return
   end
-  req.perform(selectedText, function(result)
+  local query = selectedText .. " Please give an example in " .. vim.api.nvim_get_option_value("filetype", {buf=buffer})
+  req.perform(query, function(result)
     --Extract code
     local newText = extract.code(result.data.output)
     local tokens = result.data.tokens
