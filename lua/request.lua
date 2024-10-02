@@ -18,6 +18,9 @@ local fidgetAvailable, fidgetprogress = pcall(require, "fidget.progress")
 function M.perform(prompt, result_cb)
   local token = os.getenv("KAGI_API_TOKEN") --TODO: make this configurable
   local cmd = {'curl', '-H', 'Authorization: Bot ' .. token, '-H', 'Content-Type: application/json', '-d', '{"query": "' .. prompt ..'"}', 'https://kagi.com/api/v0/fastgpt'}
+  -- if vim.loop.os_uname().sysname == "Windows_NT" then
+  --   cmd = {"powershell.exe", "-Command", '$OutputEncoding = [Console]::InputEncoding = [Console]::OutputEncoding = New-Object System.Text.UTF8Encoding\n$headers = @{\nAuthorization = "Bot ' .. token .. '"\n"Content-Type" = "application/json"\n}\n$body = @{\nquery="'.. prompt .. '"\n} | ConvertTo-Json\nInvoke-RestMethod -Uri "https://kagi.com/api/v0/fastgpt" -Headers $headers -Method Post -Body $body'}
+  -- end
   local progressHandle = nil
   if fidgetAvailable then
     progressHandle = fidgetprogress.handle.create({
@@ -33,6 +36,7 @@ function M.perform(prompt, result_cb)
       vim.notify(result.stderr, vim.log.levels.ERROR)
       return
     end
+    
     local decoded = vim.json.decode(result.stdout, {object=true, array=true})
     if decoded.error ~= nil then
       vim.notify(decoded.error[1].msg, vim.log.levels.ERROR)
